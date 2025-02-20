@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
+import HeroComponent from "@/components/HeroComponent";
 
 export default function Home() {
   return (
     <div>
-      <Button>Click me</Button>
+      <HeroComponent />
     </div>
-  )
+  );
 }
