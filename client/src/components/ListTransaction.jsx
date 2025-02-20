@@ -70,7 +70,7 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
                   <TableCell className="text-right">
                     ₹{transaction.amount.toFixed(2)}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right ">
                     <div className="flex justify-end gap-2">
                       <Button
                         variant="ghost"
