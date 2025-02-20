@@ -38,7 +38,7 @@ const BarTransactionData = ({ transactions = [] }) => {
     <div className="p-6 shadow-lg rounded-lg">
       <div className="mb-4">
         <h2 className="text-xl font-bold">Bar Chart</h2>
-        <p className="text-gray-300">January - June 2024</p>
+        {/* <p className="text-gray-300">January - June 2024</p> */}
       </div>
       {chartData.length > 0 ? (
         <div className="overflow-x-auto">
