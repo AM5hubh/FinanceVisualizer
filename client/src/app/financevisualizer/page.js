@@ -1,10 +1,12 @@
 "use client";
 import { TransactionForm } from "@/components/addTransaction";
 import { ListTransaction } from "@/components/ListTransaction";
-import { ReceiptIndianRupee, ArrowLeft } from "lucide-react";
+import { ReceiptIndianRupee, ArrowLeft, Home } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import BarTransactionData from "@/components/BarTransactionData";
+import PieCategoryChart from "@/components/PieCategoryChart";
+import DashboardSummary from "@/components/Summary";
 
 export default function page() {
   const [transactions, setTransactions] = useState([]);
@@ -34,8 +36,8 @@ export default function page() {
   return (
     <div className="w-full">
       <div className="relative">
-        <Link href="/" className="hidden md:block absolute top-1/2 ml-4">
-          <ArrowLeft className="size-6 hover:scale-125 transition-transform duration-300" />
+        <Link href="/" className="hidden md:block absolute ml-4 mt-3">
+          <Home className="size-6 hover:scale-125 transition-transform duration-300" />
         </Link>
         <h1 className="text-3xl md:text-4xl m-5 mb-12 font-bold flex justify-center">
           <span>
@@ -44,7 +46,11 @@ export default function page() {
           Finance Visualizer
         </h1>
       </div>
-      <div className="flex md:flex-row flex-col justify-center gap-5">
+      <div className="border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        <h2 className="text-2xl mb-3 font-semibold">Summary</h2>
+        <DashboardSummary transactions={transactions} />
+      </div>
+      <div className="flex md:flex-row flex-col justify-center gap-5 mb-5">
         <div className="md:w-1/2 border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
           <h2 className="text-2xl mb-3 font-semibold">Add Transaction</h2>
           <TransactionForm onSubmit={addTransaction} />
@@ -58,10 +64,17 @@ export default function page() {
           />
         </div>
       </div>
-      <div className="md:w-1/2 border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+
+      <div className="flex md:flex-row flex-col justify-center gap-5 mb-5">
+        <div className="md:w-1/2 border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
           {/* <h2 className="text-2xl mb-3 font-semibold">Transaction </h2> */}
           <BarTransactionData transactions={transactions} />
         </div>
+        <div className="md:w-1/2 border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+          {/* <h2 className="text-2xl mb-3 font-semibold">Transaction </h2> */}
+          <PieCategoryChart transactions={transactions} />
+        </div>
+      </div>
     </div>
   );
 }
