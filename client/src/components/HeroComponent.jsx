@@ -3,17 +3,17 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChartBarIcon, LineChartIcon, PieChartIcon } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HeroSection() {
+  const { user } = useAuth();
   return (
     <div className="relative isolate">
       <div
         className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
         aria-hidden="true"
       >
-        <div
-          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-secondary opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-        />
+        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-secondary opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
@@ -26,9 +26,15 @@ export default function HeroSection() {
             financial decisions with our intuitive personal finance tracker.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link href="/financevisualizer">
-              <Button size="lg">Get Started</Button>
-            </Link>
+            {user ? (
+              <Link href="/financevisualizer">
+                <Button size="lg" className="bg-blue-300 text-black font-bold animate-bounce ">Start Visualizing</Button>
+              </Link>
+            ) : (
+              <Link href="/auth/signup">
+                <Button size="lg">Get Started</Button>
+              </Link>
+            )}
           </div>
         </div>
 

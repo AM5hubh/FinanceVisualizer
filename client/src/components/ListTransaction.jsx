@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 // import { TransactionForm } from './TransactionForm';
 import { format } from 'date-fns';
 import { Edit2Icon, Trash2Icon } from 'lucide-react';
+import { TransactionForm } from './addTransaction';
 
 // Moved from types file for JSX version
 const CATEGORY_LABELS = {
@@ -99,12 +100,12 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
           <DialogHeader>
             <DialogTitle>Edit Transaction</DialogTitle>
           </DialogHeader>
-          {/* {editingTransaction && (
+          {editingTransaction && (
             <TransactionForm
               onSubmit={(data) => handleEdit({ ...data, id: editingTransaction.id })}
               initialData={editingTransaction}
             />
-          )} */}
+          )}
         </DialogContent>
       </Dialog>
     </>

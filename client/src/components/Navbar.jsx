@@ -1,59 +1,80 @@
 "use client";
-import { Navbar } from "flowbite-react";
+
+import { Avatar, Dropdown, Navbar, Button } from "flowbite-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ReceiptIndianRupee } from 'lucide-react';
+// import {useRouter} from "next/navigation";
+import { SignupForm } from "./signupform";
+import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
 
 export function NavbarComponent() {
-  const pathname = usePathname(); // Get the current route
+  // const router = useRouter();
+  const { user, logout } = useAuth();
+  const [isMounted, setIsMounted] = useState(false);
 
-  const getLinkClass = (path) =>
-    pathname === path
-      ? "text-white font-semibold scale-110 transition-transform duration-300"
-      : "text-gray-300 hover:text-white hover:scale-110 transition-transform duration-300";
+  useEffect(() => {
+    setIsMounted(true); // Ensure it only runs on the client
+  }, []);
 
+  if (!isMounted) return null;
+  // const handlelogout = () => {
+  //   localStorage.removeItem("token");
+  //   router.push("/auth/login");
+  // };
   return (
-    // <Navbar fluid className="dark">
-    //   <Link href="/">
-    //     {/* <img src="shortw.png" className="mr-3 h-6 sm:h-9" alt="Logo" /> */}
-    //     <ReceiptIndianRupee className="size-10"/>
-    //   </Link>
-    //   <Navbar.Collapse className="relative left-10 md:left-0">
-    //     <Link href="/" className={getLinkClass("/")}>
-    //       Home
-    //     </Link>
-    //     <Link href="#about" className={getLinkClass("/about")}>
-    //       About
-    //     </Link>
-    //     <Link href="/product" className={getLinkClass("/product")}>
-    //       Product
-    //     </Link>
-    //     <Link href="/pricing" className={getLinkClass("/pricing")}>
-    //       Pricing
-    //     </Link>
-    //     <Link href="/contact" className={getLinkClass("/contact")}>
-    //       Contact
-    //     </Link>
-    //   </Navbar.Collapse>
-    // </Navbar>
-    <Navbar fluid rounded>
-    <Navbar.Brand as={Link} href="https://flowbite-react.com">
-      {/* <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" />*/}
-      <ReceiptIndianRupee className="size-10"/>
-      <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white hidden md:block">FinanceVisualizer</span> 
-    </Navbar.Brand>
-    <Navbar.Toggle />
-    <Navbar.Collapse>
-      <Navbar.Link href="#" active>
-        Home
-      </Navbar.Link>
-      <Navbar.Link as={Link} href="#">
-        About
-      </Navbar.Link>
-      <Navbar.Link href="#">Services</Navbar.Link>
-      <Navbar.Link href="#">Pricing</Navbar.Link>
-      <Navbar.Link href="#">Contact</Navbar.Link>
-    </Navbar.Collapse>
-  </Navbar>
+    <Navbar fluid rounded className="dark fixed w-full top-0 z-50">
+      <Navbar.Brand href="/">
+        {/* <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" /> */}
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+          FinanceVisualizer
+        </span>
+      </Navbar.Brand>
+
+      {user ? (
+        <div className="flex md:order-3">
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar
+                alt="User settings"
+                img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                rounded
+              />
+            }
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">Bonnie Green</span>
+              <span className="block truncate text-sm font-medium">
+                name@flowbite.com
+              </span>
+            </Dropdown.Header>
+            {/* <Dropdown.Item>Dashboard</Dropdown.Item>
+          <Dropdown.Item>Settings</Dropdown.Item>
+          <Dropdown.Item>Earnings</Dropdown.Item>
+          <Dropdown.Divider /> */}
+            <Dropdown.Item onClick={logout}>Sign out</Dropdown.Item>
+          </Dropdown>
+          <Navbar.Toggle />
+        </div>
+      ) : (
+        <div className="flex md:order-2">
+          <Link href="/auth/signup">
+            <Button>Get started</Button>
+          </Link>
+          <Navbar.Toggle />
+        </div>
+      )}
+
+      {/* <Navbar.Collapse>
+        <Navbar.Link href="#" active>
+          Home
+        </Navbar.Link>
+        <Navbar.Link href="#">About</Navbar.Link>
+        <Navbar.Link href="#">Services</Navbar.Link>
+        <Navbar.Link href="#">Pricing</Navbar.Link>
+        <Navbar.Link href="#">Contact</Navbar.Link>
+      </Navbar.Collapse> */}
+    </Navbar>
   );
 }
