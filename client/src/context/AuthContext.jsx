@@ -1,33 +1,113 @@
-// context/AuthContext.tsx
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [userdetails, setUserdetails] = useState(null);
+  const [transactionsauth, setTransactionsauth] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check if user is logged in (you can replace this with a real API call)
-    const storedUser = localStorage.getItem("token");
-    setUser(storedUser);
-  }, []);
+  // Use useCallback to memoize these functions
+  const fetchUserDetails = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      const response = await fetch(
+        "https://jsbackend-47kc.onrender.com/api/v1/users/userprofile",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const login = (userData) => {
-    localStorage.setItem("token", JSON.stringify(userData));
-    setUser(userData);
-  };
+      const data = await response.json();
+      if (data.success) {
+        setUserdetails(data.data.user);
+      } else {
+        console.log("Failed to fetch user details:", data.message);
+      }
+    } catch (error) {
+      console.log("Error fetching user details:", error);
+    }
+  }, [user]);
+
+  const fetchtransactionDetails = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        "https://jsbackend-47kc.onrender.com/api/v1/transactions/usertransactions",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log("apidata",data)
+      if (data.success) {
+        setTransactionsauth(data.data.transactions);
+      } else {
+        console.log("Failed to fetch transaction details:", data.message);
+      }
+    } catch (error) {
+      console.log("Error fetching transaction details:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accesstoken");
+    localStorage.removeItem("refreshtoken");
     setUser(null);
+    setUserdetails(null);
+    setTransactionsauth([]);
     router.push("/");
   };
 
+  // Load token from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("accesstoken");
+    setUser(storedUser);
+  }, []);
+
+  // Fetch user details when user token changes
+  useEffect(() => {
+    if (user) {
+      fetchUserDetails();
+    }
+  }, [user, fetchUserDetails]);
+
+  // Fetch transactions when user token changes
+  useEffect(() => {
+    if (user) {
+      fetchtransactionDetails();
+    }
+  }, [user, fetchtransactionDetails]);
+
+  const contextValue = {
+    user,
+    userdetails,
+    transactionsauth,
+    isLoading,
+    logout,
+    fetchtransactionDetails // Expose this so components can refresh transactions
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

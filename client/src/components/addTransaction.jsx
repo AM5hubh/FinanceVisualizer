@@ -77,19 +77,35 @@ export function TransactionForm({ onSubmit = () => {}, initialData }) {
     },
   });
 
-  const handleFormSubmit = form.handleSubmit((values) => {
+  const handleFormSubmit = form.handleSubmit(async(values) => {
+
     try {
       onSubmit(values);
+
+      const response = await fetch('http://localhost:8000/api/v1/transactions/addtransaction', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accesstoken')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+  
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to add transaction');
+      }
+      
+      
       console.log(values);
+      
       toast({
         title: "Added Transaction",
-        // description: [values.amount, values.date, values.category, values.description].join(" "),
-        // description: values.date,
-        // description: values.category,
-        // description: values.description,
       })
       form.reset();
       setDate(undefined);
+      return data;
     } catch (error) {
       console.error("Form submission error:", error);
     }

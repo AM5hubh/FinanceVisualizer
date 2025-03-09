@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 
 export function NavbarComponent() {
   // const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, userdetails } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -44,9 +44,9 @@ export function NavbarComponent() {
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">Bonnie Green</span>
+              <span className="block text-sm">{userdetails?.username || "loading..."}</span>
               <span className="block truncate text-sm font-medium">
-                name@flowbite.com
+                {userdetails?.email || "loading..."}
               </span>
             </Dropdown.Header>
             {/* <Dropdown.Item>Dashboard</Dropdown.Item>
@@ -55,14 +55,14 @@ export function NavbarComponent() {
           <Dropdown.Divider /> */}
             <Dropdown.Item onClick={logout}>Sign out</Dropdown.Item>
           </Dropdown>
-          <Navbar.Toggle />
+          {/* <Navbar.Toggle /> */}
         </div>
       ) : (
         <div className="flex md:order-2">
           <Link href="/auth/signup">
             <Button>Get started</Button>
           </Link>
-          <Navbar.Toggle />
+          {/* <Navbar.Toggle /> */}
         </div>
       )}
 

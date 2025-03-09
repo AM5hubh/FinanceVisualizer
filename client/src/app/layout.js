@@ -27,7 +27,6 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           <NavbarComponent />
-          
           <div className="p-2 md:p-5 mt-12">{children}</div>
           <Toaster />
         </AuthProvider>

@@ -56,7 +56,6 @@ export function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Validate form before submission
     if (!validateForm()) {
       toast({
@@ -66,49 +65,42 @@ export function LoginForm() {
       });
       return;
     }
-
+    // ${process.env.NEXT_PUBLIC_AUTH_PATH}
     setIsLoading(true);
-
     try {
-      const res = await fetch(
-        "https://jsbackend-47kc.onrender.com/api/v1/users/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const res = await fetch(`https://jsbackend-47kc.onrender.com/api/v1/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
       console.log(res);
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         toast({
           variant: "destructive",
-          title: "Registration Failed",
+          title: "Login Failed",
           description: data.message || `Error with status ${res.status}`,
         });
         // console.log(data.message || `Error with status ${res.status}`)
         return {
           messsage:
-            data.message || `Registration failed with status ${res.status}`,
+            data.message || `Login failed with status ${res.status}`,
         };
       }
 
-      console.log("Registration successful:", data);
-      localStorage.setItem("token", data.data.accessToken);
+      console.log("Login successful:", data);
+      localStorage.setItem("accesstoken", data.data.accessToken);
+      localStorage.setItem("refreshtoken", data.data.refreshToken);
       toast({
         title: "Success",
         description: "logged in successfully!",
         variant: "default",
       });
       setFormData({ email: "", password: "", username: "" });
-      // router.prefetch("/");
-      // router.replace('/')
-      // setTimeout(() => {
-        window.location.href = "/";
-      // }, 1000);
+      window.location.href = "/";
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -117,22 +109,6 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md">
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        {/* <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email" value="Your email" />
-          </div>
-          <TextInput
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="name@gmail.com"
-            color={errors.email ? "failure" : undefined}
-            helperText={errors.email}
-            required
-          />
-        </div> */}
         <div>
           <div className="mb-2 block">
             <Label htmlFor="username" value="Your username" />
@@ -169,7 +145,7 @@ export function LoginForm() {
           <Label htmlFor="remember">Remember me</Label>
         </div>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Signing up..." : "Submit"}
+          {isLoading ? "Logging in..." : "Submit"}
         </Button>
       </form>
     </div>

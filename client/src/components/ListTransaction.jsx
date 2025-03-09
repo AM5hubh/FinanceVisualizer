@@ -64,7 +64,7 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
               </TableRow>
             ) : (
               transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction._id}>
                   <TableCell>{format(transaction.date, 'PP')}</TableCell>
                   <TableCell>{transaction.description}</TableCell>
                   <TableCell>{CATEGORY_LABELS[transaction.category]}</TableCell>
