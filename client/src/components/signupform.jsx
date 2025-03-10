@@ -70,7 +70,7 @@ export function SignupForm() {
 
     try {
       const res = await fetch(
-        `https://jsbackend-47kc.onrender.com/api/v1/users/register`,
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -68,7 +68,7 @@ export function LoginForm() {
     // ${process.env.NEXT_PUBLIC_AUTH_PATH}
     setIsLoading(true);
     try {
-      const res = await fetch(`https://jsbackend-47kc.onrender.com/api/v1/users/login`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_PATH}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

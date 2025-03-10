@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
     
     try {
       const response = await fetch(
-        "https://jsbackend-47kc.onrender.com/api/v1/users/userprofile",
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/userprofile`,
         {
           method: "GET",
           headers: {
@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "https://jsbackend-47kc.onrender.com/api/v1/transactions/usertransactions",
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/usertransactions`,
         {
           method: "GET",
           headers: {

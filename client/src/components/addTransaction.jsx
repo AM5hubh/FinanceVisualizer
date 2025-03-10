@@ -82,7 +82,7 @@ export function TransactionForm({ onSubmit = () => {}, initialData }) {
     try {
       onSubmit(values);
 
-      const response = await fetch('https://jsbackend-47kc.onrender.com/api/v1/transactions/addtransaction', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/addtransaction`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accesstoken')}`,
