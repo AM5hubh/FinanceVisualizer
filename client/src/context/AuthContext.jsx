@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
       if (data.success) {
         setUserdetails(data.data.user);
       } else {
+        REFRESHTOKEN();
         console.log("Failed to fetch user details:", data.message);
       }
     } catch (error) {
@@ -68,6 +69,32 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+
+  const REFRESHTOKEN = () => {
+    const refreshtoken = localStorage.getItem("refreshtoken");
+    if (!refreshtoken) return;
+    fetch(`${process.env.NEXT_PUBLIC_AUTH_PATH}/users/refresh-token`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${refreshtoken}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          console.log(data)
+          localStorage.setItem("accesstoken", data.accesstoken);
+          setUser(data.accesstoken);
+        } else {
+          console.log(data)
+          console.log("Failed to refresh token:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.log("Error refreshing token:", error);
+      });
+  }
   const logout = () => {
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("refreshtoken");
