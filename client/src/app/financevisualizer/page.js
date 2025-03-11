@@ -18,12 +18,12 @@ export default function page() {
       { ...transaction, id: crypto.randomUUID() },
     ]);
   };
-  useEffect(() => {
-    console.log("Updated Transactions:", transactions);
-  }, [transactions]);
+  // useEffect(() => {
+  //   console.log("Updated Transactions:", transactions);
+  // }, [transactions]);
   
 
-  console.log(transactions)
+  // console.log(transactions)
   const deleteTransaction = (id) => {
     setTransactions(transactionsauth.filter((t) => t.id !== id));
   };

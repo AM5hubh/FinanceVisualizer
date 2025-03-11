@@ -1,11 +1,18 @@
 "use client";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [userRefresh, setUserRefresh] = useState(null);
   const [userdetails, setUserdetails] = useState(null);
   const [transactionsauth, setTransactionsauth] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +21,7 @@ export function AuthProvider({ children }) {
   // Use useCallback to memoize these functions
   const fetchUserDetails = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/userprofile`,
@@ -41,7 +48,7 @@ export function AuthProvider({ children }) {
 
   const fetchtransactionDetails = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
       const response = await fetch(
@@ -56,7 +63,7 @@ export function AuthProvider({ children }) {
       );
 
       const data = await response.json();
-      console.log("apidata",data)
+      // console.log("apidata", data);
       if (data.success) {
         setTransactionsauth(data.data.transactions);
       } else {
@@ -69,32 +76,34 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-
-  const REFRESHTOKEN = () => {
-    const refreshtoken = localStorage.getItem("refreshtoken");
-    if (!refreshtoken) return;
-    fetch(`${process.env.NEXT_PUBLIC_AUTH_PATH}/users/refresh-token`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${refreshtoken}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          console.log(data)
-          localStorage.setItem("accesstoken", data.accesstoken);
-          setUser(data.accesstoken);
-        } else {
-          console.log(data)
-          console.log("Failed to refresh token:", data.message);
+  const REFRESHTOKEN = async () => {
+    if (!userRefresh) return;
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/refresh-token`,
+        {
+          method: "POST",
+          headers: {
+            // Authorization: `Bearer ${user}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ refreshToken: userRefresh }),
         }
-      })
-      .catch((error) => {
-        console.log("Error refreshing token:", error);
-      });
-  }
+      );
+
+      const data = await response.json();
+      console.log(data);
+      if(data.success){
+        localStorage.setItem("accesstoken", data.data.accessToken);
+        localStorage.setItem("refreshtoken", data.data.refreshToken);
+        setUser(data.data.accessToken);
+        setUserRefresh(data.data.refreshToken);
+      }
+
+    } catch (error) {
+      console.log("error refreshing access token", error);
+    }
+  };
   const logout = () => {
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("refreshtoken");
@@ -110,13 +119,17 @@ export function AuthProvider({ children }) {
     setUser(storedUser);
   }, []);
 
+  useEffect(() => {
+    const storedRefresh = localStorage.getItem("refreshtoken");
+    setUserRefresh(storedRefresh);
+  }, []);
+
   // Fetch user details when user token changes
   useEffect(() => {
     if (user) {
       fetchUserDetails();
     }
   }, [user, fetchUserDetails]);
-
   // Fetch transactions when user token changes
   useEffect(() => {
     if (user) {
@@ -130,13 +143,11 @@ export function AuthProvider({ children }) {
     transactionsauth,
     isLoading,
     logout,
-    fetchtransactionDetails // Expose this so components can refresh transactions
+    fetchtransactionDetails, // Expose this so components can refresh transactions
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
