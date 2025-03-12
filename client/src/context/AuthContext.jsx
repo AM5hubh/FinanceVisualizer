@@ -19,6 +19,33 @@ export function AuthProvider({ children }) {
   const router = useRouter();
 
   // Use useCallback to memoize these functions
+  const REFRESHTOKEN = async () => {
+    if (!userRefresh) return;
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/refresh-token`,
+        {
+          method: "POST",
+          headers: {
+            // Authorization: `Bearer ${user}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ refreshToken: userRefresh }),
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        localStorage.setItem("accesstoken", data.data.accessToken);
+        localStorage.setItem("refreshtoken", data.data.refreshToken);
+        setUser(data.data.accessToken);
+        setUserRefresh(data.data.refreshToken);
+      }
+    } catch (error) {
+      console.log("error refreshing access token", error);
+    }
+  };
   const fetchUserDetails = useCallback(async () => {
     if (!user) return;
 
@@ -76,34 +103,6 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  const REFRESHTOKEN = async () => {
-    if (!userRefresh) return;
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/refresh-token`,
-        {
-          method: "POST",
-          headers: {
-            // Authorization: `Bearer ${user}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ refreshToken: userRefresh }),
-        }
-      );
-
-      const data = await response.json();
-      console.log(data);
-      if(data.success){
-        localStorage.setItem("accesstoken", data.data.accessToken);
-        localStorage.setItem("refreshtoken", data.data.refreshToken);
-        setUser(data.data.accessToken);
-        setUserRefresh(data.data.refreshToken);
-      }
-
-    } catch (error) {
-      console.log("error refreshing access token", error);
-    }
-  };
   const logout = () => {
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("refreshtoken");

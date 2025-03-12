@@ -31,6 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAuth } from "@/context/AuthContext";
 
 const CATEGORY_LABELS = {
   education: "Education",
@@ -76,9 +77,9 @@ export function TransactionForm({ onSubmit = () => {}, initialData }) {
       category: "other",
     },
   });
+  const {fetchtransactionDetails} = useAuth()
 
   const handleFormSubmit = form.handleSubmit(async(values) => {
-
     try {
       onSubmit(values);
 
@@ -103,6 +104,7 @@ export function TransactionForm({ onSubmit = () => {}, initialData }) {
       toast({
         title: "Added Transaction",
       })
+      fetchtransactionDetails();
       form.reset();
       setDate(undefined);
       return data;
