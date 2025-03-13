@@ -103,6 +103,61 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+  const deleteTransaction = async (id) => {
+    if (!user) return;
+    console.log("context",id)
+    // ${process.env.NEXT_PUBLIC_AUTH_PATH}
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/transactions/removetransaction`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ transactionId: id }),
+        }
+      );
+
+      const data = await response.json();
+      console.log(data)
+      if (data.success) {
+        fetchtransactionDetails();
+      } else {
+        console.log("Failed to delete transaction:", data.message);
+      }
+    } catch (error) {
+      console.log("Error deleting transaction:", error);
+    }
+  }
+
+  const editTransaction = async (id, data) => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/transactions/newtransaction`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${user}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ transactionId: id, data }),
+        }
+      );
+
+      const responseData = await response.json();
+      if (responseData.success) {
+        fetchtransactionDetails();
+      } else {
+        console.log("Failed to edit transaction:", responseData.message);
+      }
+    } catch (error) {
+      console.log("Error editing transaction:", error);
+    }
+  } 
   const logout = () => {
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("refreshtoken");
@@ -141,8 +196,10 @@ export function AuthProvider({ children }) {
     userdetails,
     transactionsauth,
     isLoading,
+    editTransaction,
     logout,
-    fetchtransactionDetails, // Expose this so components can refresh transactions
+    fetchtransactionDetails,
+    deleteTransaction // Expose this so components can refresh transactions
   };
 
   return (

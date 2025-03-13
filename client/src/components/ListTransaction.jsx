@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { Edit2Icon, Trash2Icon } from 'lucide-react';
 import { TransactionForm } from './addTransaction';
+import { useAuth } from '@/context/AuthContext';
 
 // Moved from types file for JSX version
 const CATEGORY_LABELS = {
@@ -36,9 +37,9 @@ const CATEGORY_LABELS = {
 
 export function ListTransaction({ transactions, onDelete, onEdit }) {
   const [editingTransaction, setEditingTransaction] = useState(null);
-
-  const handleEdit = (transaction) => {
-    onEdit(transaction);
+  const { editTransaction } = useAuth();
+  const handleEdit = (id, data) => {
+    editTransaction(id, data);
     setEditingTransaction(null);
   };
 
@@ -83,7 +84,7 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onDelete(transaction.id)}
+                        onClick={() => onDelete(transaction._id)}
                       >
                         <Trash2Icon className="h-4 w-4" />
                       </Button>
@@ -102,7 +103,7 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
           </DialogHeader>
           {editingTransaction && (
             <TransactionForm
-              onSubmit={(data) => handleEdit({ ...data, id: editingTransaction.id })}
+              onSubmit={(data) => handleEdit({ ...data, id: editingTransaction._id })}
               initialData={editingTransaction}
             />
           )}

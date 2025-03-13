@@ -10,31 +10,17 @@ import DashboardSummary from "@/components/Summary";
 import { useAuth } from "@/context/AuthContext";
 
 export default function page() {
-  const [transactions, setTransactions] = useState([]);
-  const { transactionsauth } = useAuth();
-  const addTransaction = (transaction) => {
-    setTransactions((prevTransactions) => [
-      ...prevTransactions,
-      { ...transaction, id: crypto.randomUUID() },
-    ]);
-  };
+  const { transactionsauth, deleteTransaction } = useAuth();
   // useEffect(() => {
   //   console.log("Updated Transactions:", transactions);
   // }, [transactions]);
-  
 
   // console.log(transactions)
-  const deleteTransaction = (id) => {
-    setTransactions(transactionsauth.filter((t) => t.id !== id));
-  };
+  const removeTransaction = (_id) => {
+    console.log(_id)
+    deleteTransaction(_id);
+  }
 
-  const editTransaction = (updatedTransaction) => {
-    setTransactions(
-      transactionsauth.map((t) =>
-        t.id === updatedTransaction.id ? updatedTransaction : t
-      )
-    );
-  };
 
   return (
     <div className="w-full">
@@ -56,14 +42,13 @@ export default function page() {
       <div className="flex md:flex-row flex-col justify-center gap-5 mb-5">
         <div className="md:w-1/2 border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
           <h2 className="text-2xl mb-3 font-semibold">Add Transaction</h2>
-          <TransactionForm onSubmit={addTransaction} />
+          <TransactionForm />
         </div>
         <div className="md:w-1/2 border p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
           <h2 className="text-2xl mb-3 font-semibold">Transactions</h2>
           <ListTransaction
             transactions={transactionsauth}
-            onDelete={deleteTransaction}
-            onEdit={editTransaction}
+            onDelete={removeTransaction}
           />
         </div>
       </div>
