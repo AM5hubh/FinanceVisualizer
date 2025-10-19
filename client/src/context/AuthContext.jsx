@@ -16,11 +16,13 @@ export function AuthProvider({ children }) {
   const [userdetails, setUserdetails] = useState(null);
   const [transactionsauth, setTransactionsauth] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
 
   // Use useCallback to memoize these functions
   const REFRESHTOKEN = async () => {
     if (!userRefresh) return;
+    setIsRefreshing(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/refresh-token`,
@@ -44,6 +46,8 @@ export function AuthProvider({ children }) {
       }
     } catch (error) {
       console.log("error refreshing access token", error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
   const fetchUserDetails = useCallback(async () => {
@@ -105,11 +109,10 @@ export function AuthProvider({ children }) {
 
   const deleteTransaction = async (id) => {
     if (!user) return;
-    console.log("context",id)
-    // ${process.env.NEXT_PUBLIC_AUTH_PATH}
+    console.log("context", id);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/transactions/removetransaction`,
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/removetransaction`,
         {
           method: "POST",
           headers: {
@@ -121,7 +124,7 @@ export function AuthProvider({ children }) {
       );
 
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       if (data.success) {
         fetchtransactionDetails();
       } else {
@@ -130,14 +133,14 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.log("Error deleting transaction:", error);
     }
-  }
+  };
 
   const editTransaction = async (id, data) => {
     if (!user) return;
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/transactions/newtransaction`,
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/newtransaction`,
         {
           method: "PATCH",
           headers: {
@@ -157,7 +160,7 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.log("Error editing transaction:", error);
     }
-  } 
+  };
   const logout = () => {
     localStorage.removeItem("accesstoken");
     localStorage.removeItem("refreshtoken");
@@ -196,10 +199,11 @@ export function AuthProvider({ children }) {
     userdetails,
     transactionsauth,
     isLoading,
+    isRefreshing,
     editTransaction,
     logout,
     fetchtransactionDetails,
-    deleteTransaction // Expose this so components can refresh transactions
+    deleteTransaction, // Expose this so components can refresh transactions
   };
 
   return (

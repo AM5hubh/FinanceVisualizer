@@ -1,5 +1,5 @@
-'use client';
-import { useState } from 'react';
+"use client";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,39 +7,39 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 // import { TransactionForm } from './TransactionForm';
-import { format } from 'date-fns';
-import { Edit2Icon, Trash2Icon } from 'lucide-react';
-import { TransactionForm } from './addTransaction';
-import { useAuth } from '@/context/AuthContext';
+import { format } from "date-fns";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
+import { TransactionForm } from "./addTransaction";
+import { useAuth } from "@/context/AuthContext";
 
 // Moved from types file for JSX version
 const CATEGORY_LABELS = {
-  housing: 'Housing',
-  transportation: 'Transportation',
-  food: 'Food',
-  utilities: 'Utilities',
-  healthcare: 'Healthcare',
-  entertainment: 'Entertainment',
-  shopping: 'Shopping',
-  education: 'Education',
-  savings: 'Savings',
-  other: 'Other'
+  housing: "Housing",
+  transportation: "Transportation",
+  food: "Food",
+  utilities: "Utilities",
+  healthcare: "Healthcare",
+  entertainment: "Entertainment",
+  shopping: "Shopping",
+  education: "Education",
+  savings: "Savings",
+  other: "Other",
 };
 
 export function ListTransaction({ transactions, onDelete, onEdit }) {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const { editTransaction } = useAuth();
-  const handleEdit = (id, data) => {
-    editTransaction(id, data);
+  const handleEdit = (data) => {
+    editTransaction(editingTransaction._id, data);
     setEditingTransaction(null);
   };
 
@@ -59,14 +59,17 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No transactions yet. Add one to get started!
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
                 <TableRow key={transaction._id}>
-                  <TableCell>{format(transaction.date, 'PP')}</TableCell>
+                  <TableCell>{format(transaction.date, "PP")}</TableCell>
                   <TableCell>{transaction.description}</TableCell>
                   <TableCell>{CATEGORY_LABELS[transaction.category]}</TableCell>
                   <TableCell className="text-right">
@@ -96,14 +99,17 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
           </TableBody>
         </Table>
       </div>
-      <Dialog open={!!editingTransaction} onOpenChange={() => setEditingTransaction(null)}>
+      <Dialog
+        open={!!editingTransaction}
+        onOpenChange={() => setEditingTransaction(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Transaction</DialogTitle>
           </DialogHeader>
           {editingTransaction && (
             <TransactionForm
-              onSubmit={(data) => handleEdit({ ...data, id: editingTransaction._id })}
+              onSubmit={(data) => handleEdit(data)}
               initialData={editingTransaction}
             />
           )}
