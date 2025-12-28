@@ -11,14 +11,16 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 // import { TransactionForm } from './TransactionForm';
 import { format } from "date-fns";
-import { Edit2Icon, Trash2Icon } from "lucide-react";
-import { TransactionForm } from "./addTransaction";
+import { Edit, Edit2Icon, Trash2Icon } from "lucide-react";
+// import { TransactionForm } from "./addTransaction";
+import { EditTransaction } from "./editTransaction";
 import { useAuth } from "@/context/AuthContext";
 
 // Moved from types file for JSX version
@@ -35,13 +37,8 @@ const CATEGORY_LABELS = {
   other: "Other",
 };
 
-export function ListTransaction({ transactions, onDelete, onEdit }) {
+export function ListTransaction({ transactions, onDelete }) {
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const { editTransaction } = useAuth();
-  const handleEdit = (data) => {
-    editTransaction(editingTransaction._id, data);
-    setEditingTransaction(null);
-  };
 
   return (
     <>
@@ -76,11 +73,14 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
                     ₹{transaction.amount.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-right ">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2 ">
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setEditingTransaction(transaction)}
+                        onClick={() => {
+                          // handleEdit(transaction);
+                          setEditingTransaction(transaction);
+                        }}
                       >
                         <Edit2Icon className="h-4 w-4" />
                       </Button>
@@ -106,11 +106,14 @@ export function ListTransaction({ transactions, onDelete, onEdit }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Transaction</DialogTitle>
+            <DialogDescription>
+              Update your transaction details below
+            </DialogDescription>
           </DialogHeader>
           {editingTransaction && (
-            <TransactionForm
-              onSubmit={(data) => handleEdit(data)}
+            <EditTransaction
               initialData={editingTransaction}
+              onClose={() => setEditingTransaction(null)}
             />
           )}
         </DialogContent>

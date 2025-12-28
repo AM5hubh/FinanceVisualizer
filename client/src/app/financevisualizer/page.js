@@ -17,10 +17,8 @@ export default function page() {
 
   // console.log(transactions)
   const removeTransaction = (_id) => {
-    console.log(_id)
     deleteTransaction(_id);
-  }
-
+  };
 
   return (
     <div className="w-full">

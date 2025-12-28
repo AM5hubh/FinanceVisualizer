@@ -7,6 +7,7 @@ import {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthContext = createContext(null);
 
@@ -19,6 +20,7 @@ export function AuthProvider({ children }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
 
+  const { toast } = useToast();
   // Use useCallback to memoize these functions
   const REFRESHTOKEN = async () => {
     if (!userRefresh) return;
@@ -137,17 +139,16 @@ export function AuthProvider({ children }) {
 
   const editTransaction = async (id, data) => {
     if (!user) return;
-
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/newtransaction`,
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/edittransaction`,
         {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${user}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ transactionId: id, data }),
+          body: JSON.stringify({ transactionId: id, ...data }),
         }
       );
 
@@ -155,10 +156,16 @@ export function AuthProvider({ children }) {
       if (responseData.success) {
         fetchtransactionDetails();
       } else {
-        console.log("Failed to edit transaction:", responseData.message);
+        toast({
+          title: "Failed to edit transaction",
+          description: responseData.message,
+        });
       }
     } catch (error) {
-      console.log("Error editing transaction:", error);
+      toast({
+        title: "Error editing transaction",
+        description: error.message,
+      });
     }
   };
   const logout = () => {
@@ -174,12 +181,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedUser = localStorage.getItem("accesstoken");
     setUser(storedUser);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const storedRefresh = localStorage.getItem("refreshtoken");
     setUserRefresh(storedRefresh);
-  }, []);
+  }, [user]);
 
   // Fetch user details when user token changes
   useEffect(() => {

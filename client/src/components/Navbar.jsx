@@ -1,14 +1,10 @@
 "use client";
-
-import { Avatar, Dropdown, Navbar, Button } from "flowbite-react";
+import { Avatar, NavbarBrand, Dropdown, Navbar, Button } from "flowbite-react";
 import Link from "next/link";
-// import {useRouter} from "next/navigation";
-import { SignupForm } from "./signupform";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 
 export function NavbarComponent() {
-  // const router = useRouter();
   const { user, logout, userdetails } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -17,18 +13,15 @@ export function NavbarComponent() {
   }, []);
 
   if (!isMounted) return null;
-  // const handlelogout = () => {
-  //   localStorage.removeItem("token");
-  //   router.push("/auth/login");
-  // };
+
   return (
     <Navbar fluid rounded className="dark fixed w-full top-0 z-50">
-      <Navbar.Brand href="/">
-        {/* <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" /> */}
+      <NavbarBrand as={Link} href="/">
+        {/* <img src="favicon.ico" className="h-10 mr-3" /> */}
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           FinanceVisualizer
         </span>
-      </Navbar.Brand>
+      </NavbarBrand>
 
       {user ? (
         <div className="flex md:order-3">
@@ -44,18 +37,15 @@ export function NavbarComponent() {
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">{userdetails?.username || "loading..."}</span>
+              <span className="block text-sm ">
+                {userdetails?.username || "loading..."}
+              </span>
               <span className="block truncate text-sm font-medium">
                 {userdetails?.email || "loading..."}
               </span>
             </Dropdown.Header>
-            {/* <Dropdown.Item>Dashboard</Dropdown.Item>
-          <Dropdown.Item>Settings</Dropdown.Item>
-          <Dropdown.Item>Earnings</Dropdown.Item>
-          <Dropdown.Divider /> */}
             <Dropdown.Item onClick={logout}>Sign out</Dropdown.Item>
           </Dropdown>
-          {/* <Navbar.Toggle /> */}
         </div>
       ) : (
         <div className="flex md:order-2">
@@ -65,16 +55,6 @@ export function NavbarComponent() {
           {/* <Navbar.Toggle /> */}
         </div>
       )}
-
-      {/* <Navbar.Collapse>
-        <Navbar.Link href="#" active>
-          Home
-        </Navbar.Link>
-        <Navbar.Link href="#">About</Navbar.Link>
-        <Navbar.Link href="#">Services</Navbar.Link>
-        <Navbar.Link href="#">Pricing</Navbar.Link>
-        <Navbar.Link href="#">Contact</Navbar.Link>
-      </Navbar.Collapse> */}
     </Navbar>
   );
 }
