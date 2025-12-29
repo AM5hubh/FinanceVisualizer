@@ -17,7 +17,7 @@ export function NavbarComponent() {
   return (
     <Navbar fluid rounded className="dark fixed w-full top-0 z-50">
       <NavbarBrand as={Link} href="/">
-        {/* <img src="favicon.ico" className="h-10 mr-3" /> */}
+        <img src="favicon.ico" className="h-8 mr-3" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           FinanceVisualizer
         </span>
