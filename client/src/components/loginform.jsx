@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Cookies from "js-cookie";
 
 export function LoginForm() {
   const router = useRouter();
@@ -68,11 +69,14 @@ export function LoginForm() {
     // ${process.env.NEXT_PUBLIC_AUTH_PATH}
     setIsLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_PATH}/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/users/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       console.log(res);
       const data = await res.json().catch(() => ({}));
 
@@ -84,14 +88,19 @@ export function LoginForm() {
         });
         // console.log(data.message || `Error with status ${res.status}`)
         return {
-          messsage:
-            data.message || `Login failed with status ${res.status}`,
+          messsage: data.message || `Login failed with status ${res.status}`,
         };
       }
 
       console.log("Login successful:", data);
-      localStorage.setItem("accesstoken", data.data.accessToken);
-      localStorage.setItem("refreshtoken", data.data.refreshToken);
+      Cookies.set("accesstoken", data.data.accessToken, {
+        secure: true,
+        sameSite: "strict",
+      });
+      Cookies.set("refreshtoken", data.data.refreshToken, {
+        secure: true,
+        sameSite: "strict",
+      });
       toast({
         title: "Success",
         description: "logged in successfully!",

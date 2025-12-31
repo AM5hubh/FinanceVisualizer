@@ -8,8 +8,9 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import { Calendar } from "@/components/ui/calendar";
+import Cookies from "js-cookie";
 import {
   Form,
   FormControl,
@@ -68,7 +69,7 @@ const formSchema = z.object({
 
 export function TransactionForm({ onSubmit = () => {}, initialData }) {
   const [date, setDate] = useState(initialData?.date);
-  const { toast } = useToast()
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -77,33 +78,35 @@ export function TransactionForm({ onSubmit = () => {}, initialData }) {
       category: "other",
     },
   });
-  const {fetchtransactionDetails} = useAuth()
+  const { fetchtransactionDetails } = useAuth();
 
-  const handleFormSubmit = form.handleSubmit(async(values) => {
+  const handleFormSubmit = form.handleSubmit(async (values) => {
     try {
       onSubmit(values);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/addtransaction`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accesstoken')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
-  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AUTH_PATH}/transactions/addtransaction`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${Cookies.get("accesstoken")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to add transaction');
+        throw new Error(data.message || "Failed to add transaction");
       }
-      
-      
+
       console.log(values);
-      
+
       toast({
         title: "Added Transaction",
-      })
+      });
       fetchtransactionDetails();
       form.reset();
       setDate(undefined);

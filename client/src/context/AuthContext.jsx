@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import Cookies from "js-cookie";
 
 const AuthContext = createContext(null);
 
@@ -41,8 +42,14 @@ export function AuthProvider({ children }) {
       const data = await response.json();
       console.log(data);
       if (data.success) {
-        localStorage.setItem("accesstoken", data.data.accessToken);
-        localStorage.setItem("refreshtoken", data.data.refreshToken);
+        Cookies.set("accesstoken", data.data.accessToken, {
+          secure: true,
+          sameSite: "strict",
+        });
+        Cookies.set("refreshtoken", data.data.refreshToken, {
+          secure: true,
+          sameSite: "strict",
+        });
         setUser(data.data.accessToken);
         setUserRefresh(data.data.refreshToken);
       }
@@ -169,22 +176,22 @@ export function AuthProvider({ children }) {
     }
   };
   const logout = () => {
-    localStorage.removeItem("accesstoken");
-    localStorage.removeItem("refreshtoken");
+    Cookies.remove("accesstoken");
+    Cookies.remove("refreshtoken");
     setUser(null);
     setUserdetails(null);
     setTransactionsauth([]);
     router.push("/");
   };
 
-  // Load token from localStorage on mount
+  // Load token from cookies on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("accesstoken");
+    const storedUser = Cookies.get("accesstoken");
     setUser(storedUser);
   }, [user]);
 
   useEffect(() => {
-    const storedRefresh = localStorage.getItem("refreshtoken");
+    const storedRefresh = Cookies.get("refreshtoken");
     setUserRefresh(storedRefresh);
   }, [user]);
 
